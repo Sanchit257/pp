@@ -55,17 +55,32 @@ function showDraft() {
   draft.scrollTop = draft.scrollHeight;
 }
 
-async function loadState() {
-  const response = await fetch("/api/state");
-  if (!response.ok) throw new Error("The classroom state did not load.");
-  const data = await response.json();
-  state.model = data.model;
-  state.students = data.students;
-  state.lastRun = data.lastRun;
-  $("model-line").textContent = `Teacher agent and student agents call ${data.model} on this computer through Ollama. Memory is saved in data/room.json.`;
-  if (data.lastRun?.assignment) $("assignment").value = data.lastRun.assignment;
+const copy = (value) => JSON.parse(JSON.stringify(value));
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function loadState() {
+  state.model = DEMO.model;
+  state.students = copy(DEMO.students);
+  state.lastRun = null;
+  state.selectedId = null;
+  $("assignment").value = DEMO.assignment;
+  $("model-line").textContent = "Demo mode. The brief and plans below are sample agent output, played back in the browser. Nothing is sent to a model.";
   render();
-  setStatus(data.lastRun ? "The last run is loaded from memory on this computer." : "Portraits and memory are loaded. The agents have not planned today yet.");
+  setStatus("Portraits and memory are loaded. The agents have not planned today yet.");
+}
+
+async function type(who, text) {
+  state.draftWho = who;
+  state.draft = "";
+  showDraft();
+  const roster = $("roster");
+  roster.querySelectorAll(".student").forEach((row) => row.classList.remove("writing"));
+  roster.querySelector(`[data-open="${CSS.escape(who)}"]`)?.closest(".student")?.classList.add("writing");
+  for (let i = 0; i < text.length; i += 6) {
+    state.draft = text.slice(0, i + 6);
+    showDraft();
+    await pause(12);
+  }
 }
 
 function renderBrief() {
@@ -214,6 +229,7 @@ function render() {
   showDraft();
   $("send").disabled = state.running;
   $("send").textContent = state.running ? "Agents are writing" : "Run the teacher agent and the five student agents";
+  $("reset").hidden = state.running || !state.lastRun;
 }
 
 function select(id) {
@@ -236,90 +252,40 @@ async function runAgents(event) {
   state.draft = "";
   state.draftWho = "teacher";
   state.lastRun = null;
+  state.students = copy(DEMO.students);
   render();
-  setStatus("Starting the agents.");
-  try {
-    const response = await fetch("/api/run", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ assignment: $("assignment").value }),
-    });
-    if (!response.ok || !response.body) {
-      const message = await response.text();
-      throw new Error(message || `The run failed (${response.status}).`);
-    }
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const chunks = buffer.split("\n\n");
-      buffer = chunks.pop() || "";
-      for (const chunk of chunks) {
-        const line = chunk.split("\n").find((item) => item.startsWith("data:"));
-        if (!line) continue;
-        applyEvent(JSON.parse(line.slice(5).trim()));
-      }
-    }
-  } catch (err) {
-    setStatus(err.message || "The run failed.");
-  } finally {
-    state.running = false;
-    state.draft = "";
-    state.draftWho = "";
-    render();
-  }
-}
+  const today = new Date().toLocaleDateString("en-CA");
+  const brief = copy(DEMO.brief);
 
-function applyEvent(event) {
-  if (event.type === "status") {
-    setStatus(event.text);
-    state.draft = "";
-    render();
-    return;
-  }
-  if (event.type === "token") {
-    state.draftWho = event.id || event.who;
-    state.draft += event.text;
-    showDraft();
-    const roster = $("roster");
-    roster.querySelectorAll(".student").forEach((row) => row.classList.remove("writing"));
-    const current = roster.querySelector(`[data-open="${CSS.escape(state.draftWho)}"]`)?.closest(".student");
-    current?.classList.add("writing");
-    return;
-  }
-  if (event.type === "teacher") {
-    state.lastRun = { ...(state.lastRun || {}), assignment: $("assignment").value, brief: event.brief, plans: {} };
-    state.draft = "";
-    render();
-    setStatus("The brief is in. Student agents are next.");
-    return;
-  }
-  if (event.type === "student") {
-    const student = studentById(event.id);
-    if (student) student.memory = event.memory;
-    state.lastRun.plans[event.id] = event.plan;
+  setStatus("The teacher agent is writing the brief.");
+  await type("teacher", `${brief.title}\n\n${brief.aim}\n\n${brief.must.map((item, i) => `${i + 1}. ${item}`).join("\n")}`);
+  await pause(300);
+  state.lastRun = { assignment: DEMO.assignment, at: today, brief, plans: {} };
+  state.draft = "";
+  render();
+
+  for (const student of state.students) {
+    const plan = copy(DEMO.plans[student.id]);
+    setStatus(`${student.name.split(" ")[0]}'s agent is writing the plan from the brief and the memory it has kept.`);
+    await type(student.id, `${plan.approach}\n\n${plan.why}\n\n${plan.path.map((step, i) => `${i + 1}. ${step}`).join("\n")}`);
+    await pause(250);
+    state.lastRun.plans[student.id] = plan;
+    student.memory.push(`${today}: ${plan.store}`);
     state.draft = "";
     state.draftWho = "";
     render();
-    return;
   }
-  if (event.type === "done") {
-    state.students = event.state.students;
-    state.lastRun = event.state.lastRun;
-    setStatus("All five plans are in and saved. The mathematics came from the teacher agent. The ways in came from the student agents.");
-    render();
-    return;
-  }
-  if (event.type === "error") {
-    setStatus(event.text);
-  }
+
+  state.running = false;
+  render();
+  setStatus("All five plans are in. The mathematics came from the teacher agent. The ways in came from the student agents. Open a student to read the plan.");
 }
 
 function init() {
   $("assign").addEventListener("submit", runAgents);
+  $("reset").addEventListener("click", () => {
+    if (!state.running) loadState();
+  });
   $("roster").addEventListener("click", (event) => {
     const button = event.target.closest("[data-open]");
     if (button) select(button.dataset.open);
@@ -330,7 +296,7 @@ function init() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.selectedId) closePlan();
   });
-  loadState().catch((err) => setStatus(err.message));
+  loadState();
 }
 
 init();

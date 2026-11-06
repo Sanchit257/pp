@@ -21,10 +21,11 @@
 
     <form id="assign">
       <label class="kicker" for="assignment">Assignment from Ms. Imani Brooks</label>
-      <input id="assignment" class="assignment" name="assignment" value="How to do long division" required autocomplete="off">
+      <input id="assignment" class="assignment" name="assignment" value="How to do long division" readonly autocomplete="off">
       <p class="dek">The teacher agent turns this into today's brief. Each student agent writes a plan from that brief and the memory it has kept since week 1.</p>
       <div class="actions">
         <button id="send" class="primary" type="submit">Run the teacher agent and the five student agents</button>
+        <button id="reset" class="ghost" type="button" hidden>Reset the demo</button>
       </div>
     </form>
     <p id="model-line" class="meta">Calling the local model.</p>
@@ -49,12 +50,13 @@
     <section id="walk" hidden aria-labelledby="walk-title"></section>
 
     <footer>
-      <p>Grade 4, Room 12. The agents run on Qwen3 through Ollama at 127.0.0.1:11434. Each new plan's memory note is appended in data/room.json.</p>
+      <p>Grade 4, Room 12. Demonstration only: the brief and plans are sample output of the teacher and student agents. Each plan's memory note is added to that student's memory until you reset or reload.</p>
     </footer>
   </main>
   <noscript>
     <p>This classroom simulation needs JavaScript. It runs entirely in the page.</p>
   </noscript>
+  <script src="demo.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
