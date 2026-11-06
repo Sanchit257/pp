@@ -1,0 +1,66 @@
+{
+  "model": "qwen3",
+  "lastRun": null,
+  "students": [
+    {
+      "id": "amina",
+      "name": "Amina Rahman",
+      "kind": "Visual learner",
+      "capability": "Fast pace. Facts through 12 are automatic. A spoken list of steps fades within a minute.",
+      "reached": "She took the picture and finished while the spoken directions were still going.",
+      "fellApart": "With the picture removed and only the voice left, she lost the second step.",
+      "memory": [
+        "Week 1: she finished from the picture and lost the second step when only the voice was left.",
+        "Last week she drew a correct area model for multi-digit multiplication and skipped the written partial products. Listening without a picture, she missed a step."
+      ]
+    },
+    {
+      "id": "theo",
+      "name": "Theo Lang",
+      "kind": "Auditory learner",
+      "capability": "Steady pace. Holds a chant. Drops facts and steps when the work goes silent.",
+      "reached": "He chose the spoken version and could repeat it after one hearing.",
+      "fellApart": "The same task on a silent page, and the procedure dropped out halfway.",
+      "memory": [
+        "Week 1: he repeated the spoken version after one hearing and lost it on a silent page.",
+        "The harder multiplication facts stuck as a skip-count chant. On a timed silent sheet those facts were gone."
+      ]
+    },
+    {
+      "id": "lila",
+      "name": "Lila Nguyen",
+      "kind": "Learn by doing",
+      "capability": "Deliberate pace. Facts are solid through the 5s. The idea slips if the objects are cleared too soon.",
+      "reached": "She went straight for the blocks and built the answer correctly.",
+      "fellApart": "When the blocks were put away before she wrote, the written answer no longer matched what she had built.",
+      "memory": [
+        "Week 1: the blocks were right, and the written answer was wrong after the blocks were cleared.",
+        "She showed 12 × 4 with bags of cubes. The product on the paper was wrong after the cubes were cleared first."
+      ]
+    },
+    {
+      "id": "jonah",
+      "name": "Jonah Ellis",
+      "kind": "Reading and writing",
+      "capability": "Steady pace. Writes well above grade. Place value slips when a sentence forgets the units. Being wrong in front of the class throws him.",
+      "reached": "He chose the page and wrote a clear account.",
+      "fellApart": "The account sounded right and still used the wrong unit, and he would not say so in front of the group.",
+      "memory": [
+        "Week 1: the writing was clear and the unit was still wrong. He would not correct it out loud.",
+        "He wrote a clean explanation of rounding and then rounded 1,450 to 1,000. The sentences never said whether the digits were thousands or hundreds."
+      ]
+    },
+    {
+      "id": "mateo",
+      "name": "Mateo Cruz",
+      "kind": "Sequential learner",
+      "capability": "Deliberate pace. Strong estimate. Working memory holds about two steps, then the rest falls off.",
+      "reached": "He started willingly and got the first two moves right when they were shown one at a time.",
+      "fellApart": "Given the whole procedure at once, the third step vanished even though the first two had been correct.",
+      "memory": [
+        "Week 1: two moves shown one at a time held. The whole procedure at once lost step three.",
+        "Two-step word problems hold. Three-step problems fail on the third step. He gets that step back when it arrives alone, after the first two are done."
+      ]
+    }
+  ]
+}

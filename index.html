@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Room 12 · How to do long division</title>
+  <meta name="description" content="A prototype of one teacher agent and five student agents planning the same long-division lesson five different ways.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f6f1e6'/%3E%3Crect x='3' width='1.5' height='16' fill='%23c46a52'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500;1,9..144,650&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#brief">Skip to the lesson</a>
+  <main class="book">
+    <header class="mastline">
+      <p>North Annex Elementary</p>
+      <p>Prototype</p>
+    </header>
+
+    <form id="assign">
+      <label class="kicker" for="assignment">Assignment from Ms. Imani Brooks</label>
+      <input id="assignment" class="assignment" name="assignment" value="How to do long division" required autocomplete="off">
+      <p class="dek">The teacher agent turns this into today's brief. Each student agent writes a plan from that brief and the memory it has kept since week 1.</p>
+      <div class="actions">
+        <button id="send" class="primary" type="submit">Run the teacher agent and the five student agents</button>
+      </div>
+    </form>
+    <p id="model-line" class="meta">Calling the local model.</p>
+
+    <section id="brief" aria-labelledby="brief-title">
+      <h2 id="brief-title">What the teacher agent requires</h2>
+      <p id="brief-lead">It does not teach the five children. It sends one aim to every student agent.</p>
+      <div id="brief-body"></div>
+      <pre id="draft" class="draft" hidden></pre>
+      <p id="status" class="status" aria-live="polite">Loading the class.</p>
+    </section>
+
+    <div class="workspace" id="workspace">
+      <section aria-labelledby="class-title">
+        <h2 id="class-title">The class</h2>
+        <p class="section-lead">Week-1 portraits and later notes are already in each agent's memory. Open a student to read what that agent has kept. The plan appears after the model writes it.</p>
+        <div id="roster" aria-busy="false"></div>
+      </section>
+      <section id="plan" hidden aria-labelledby="plan-title"></section>
+    </div>
+
+    <section id="walk" hidden aria-labelledby="walk-title"></section>
+
+    <footer>
+      <p>Grade 4, Room 12. The agents run on Qwen3 through Ollama at 127.0.0.1:11434. Each new plan's memory note is appended in data/room.json.</p>
+    </footer>
+  </main>
+  <noscript>
+    <p>This classroom simulation needs JavaScript. It runs entirely in the page.</p>
+  </noscript>
+  <script src="app.js"></script>
+</body>
+</html>
